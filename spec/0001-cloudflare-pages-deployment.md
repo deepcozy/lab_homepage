@@ -18,6 +18,8 @@ Cloudflare CLI tools on the developer machine.
 - Deploy with the official Cloudflare Wrangler action, which installs the CLI
   exclusively on the GitHub runner.
 - Verify the production homepage and its referenced static assets after upload.
+- Allow up to eight minutes for initial HTTPS provisioning and propagation
+  while continuing to validate TLS certificates.
 - Record the production and deployment URLs in the Actions job summary.
 
 ## Credentials and domain

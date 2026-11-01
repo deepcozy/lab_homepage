@@ -30,6 +30,8 @@ async function verify(baseUrl) {
     const response = await fetch(remote, {
       cache: "no-store",
       signal: AbortSignal.timeout(15_000),
+    }).catch((error) => {
+      throw new Error(`${remote}: ${error.cause?.code || error.message}`, { cause: error });
     });
     if (!response.ok) {
       throw new Error(`${remote}: HTTP ${response.status}`);
@@ -42,6 +44,8 @@ async function verify(baseUrl) {
   }
 }
 
+// A new Pages hostname can need several minutes before HTTPS is ready.
+const deadline = Date.now() + 8 * 60_000;
 for (const baseUrl of new Set([deploymentUrl, productionUrl])) {
   for (let attempt = 1; ; attempt++) {
     try {
@@ -49,9 +53,9 @@ for (const baseUrl of new Set([deploymentUrl, productionUrl])) {
       console.log(`Verified ${paths.length} published files: ${baseUrl}`);
       break;
     } catch (error) {
-      if (attempt === 6) throw error;
-      console.log(`Waiting for Pages to publish (attempt ${attempt}/6): ${error.message}`);
-      await setTimeout(10_000);
+      if (Date.now() >= deadline) throw error;
+      console.log(`Waiting for Pages HTTPS and content (attempt ${attempt}): ${error.message}`);
+      await setTimeout(15_000);
     }
   }
 }

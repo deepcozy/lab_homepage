@@ -9,7 +9,9 @@ GitHub Actions tab on `main`.
 The runner builds the site with Node.js 24, checks the Pages project, creates
 it if missing, and uploads `dist/` with the official Cloudflare Wrangler action.
 It verifies both the deployment URL and the production URL by comparing every
-published file with the build. The job summary records both URLs.
+published file with the build. Verification allows up to eight minutes for
+initial HTTPS provisioning and propagation, without bypassing certificate
+validation. The job summary records both URLs.
 
 No Cloudflare CLI, Wrangler dependency, or Cloudflare configuration file is
 required on the developer machine. This static site has no application secrets,
