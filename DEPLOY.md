@@ -6,16 +6,18 @@ Push to `main` in `deepcozy/lab_homepage` to run
 `.github/workflows/deploy-pages.yml`. It can also be started manually from the
 GitHub Actions tab on `main`.
 
-The runner builds the site with Node.js 24, checks the Pages project, creates
-it if missing, and uploads `dist/` with the official Cloudflare Wrangler action.
+The runner uses Node.js 24, checks the Pages project and private R2 bucket,
+creates them if missing, generates the QR code during the build, and uploads
+`dist/` and the Pages Functions with the official Cloudflare Wrangler action.
 It verifies both the deployment URL and the production URL by comparing every
 published file with the build. Verification allows up to eight minutes for
 initial HTTPS provisioning and propagation, without bypassing certificate
 validation. The job summary records both URLs.
 
-No Cloudflare CLI, Wrangler dependency, or Cloudflare configuration file is
-required on the developer machine. This static site has no application secrets,
-database, middleware, or server infrastructure to configure.
+No Cloudflare CLI or Wrangler dependency is installed on the developer machine.
+`wrangler.toml` binds the private `cozie-downloads` bucket as `ANDROID_RELEASES`.
+`_routes.json` limits Functions execution to the two Android endpoints; all
+other public files are served statically.
 
 ## GitHub configuration
 
@@ -24,10 +26,11 @@ Repository Actions secrets:
 | Name | Value |
 | --- | --- |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
-| `CLOUDFLARE_API_TOKEN` | Token granting Account / Cloudflare Pages / Edit for that account |
+| `CLOUDFLARE_API_TOKEN` | Token granting Cloudflare Pages Edit and Workers R2 Storage Edit for that account |
 
 An R2-only API token cannot deploy Pages. The R2 access key and secret access key
-are not used by this workflow. Never commit any token or S3 credentials.
+are not used by the homepage workflow; they belong only in the mobile upload
+workflow's Actions secrets. Never commit any token or S3 credentials.
 
 Optional repository Actions variable:
 
@@ -39,6 +42,23 @@ The first run creates a Direct Upload project with production branch `main`.
 An existing project must also use `main` as its production branch.
 Action versions are pinned to source revisions and Wrangler is pinned to
 `4.156.0` so tool upgrades are explicit.
+
+## Android downloads
+
+The QR encodes the production origin plus `/download/android`. The build uses
+`SITE_URL`, populated from the Pages project API response. Pages Functions
+read `android/latest.json` from private R2, validate it, and stream the referenced
+APK. No GitHub access token or S3 secret is exposed to visitors.
+
+`/api/android-release` provides public release metadata. After a deployment,
+Actions checks it and verifies the APK HEAD response. The separate Check
+Android release workflow repeats this check twice hourly and supports manual
+runs. Its optional `COZIE_SITE_URL` repository variable defaults to
+`https://cozie.pages.dev`.
+
+The first APK must be published by `lab_mobile`; until then, the endpoints
+return HTTP 503 and Actions reports that publication is pending. The mobile
+upload contract and required credentials are in [ANDROID_RELEASES.md](./ANDROID_RELEASES.md).
 
 ## Domain
 
@@ -54,10 +74,11 @@ custom DNS changes are not part of this workflow.
 
 ## Checks and rollback
 
-Local checks require only Node.js:
+Local checks:
 
 ```sh
-node --test scripts/ensure-pages-project.test.mjs
+npm ci
+npm test
 npm run build
 ```
 

@@ -96,12 +96,19 @@ body {
 }
 
 .scan__slot {
+  display: block;
   flex: none;
   width: 187.258px;
   height: 185.081px;
 }
 
+.scan__slot:focus-visible {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 8px;
+}
+
 .scan__code {
+  position: relative;
   width: 187.258px;
   height: 185.081px;
   background: #fff;
@@ -111,6 +118,19 @@ body {
 .scan__code img {
   display: block;
   max-width: none;
+}
+
+.scan__qr {
+  position: absolute;
+  inset: 8px;
+  width: calc(100% - 16px);
+  height: calc(100% - 16px);
+  object-fit: contain;
+}
+
+.scan__corners {
+  position: relative;
+  pointer-events: none;
 }
 
 .scan p {

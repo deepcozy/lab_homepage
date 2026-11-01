@@ -1,6 +1,7 @@
 import { cp, mkdir, stat } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { writeAndroidQr } from "./generate-android-qr.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const output = path.join(root, "dist");
@@ -22,8 +23,9 @@ for (const relativePath of required) {
 
 await mkdir(output, { recursive: true });
 await Promise.all(
-  ["index.html", "styles.css", "assets"].map((name) =>
+  ["index.html", "styles.css", "assets", "_routes.json"].map((name) =>
     cp(path.join(root, name), path.join(output, name), { recursive: true }),
   ),
 );
+await writeAndroidQr(output, process.env.SITE_URL);
 console.log(`Static site built: ${output}`);

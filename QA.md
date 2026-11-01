@@ -9,4 +9,12 @@ Date: 2026-11-01.
 - Outfit is self-hosted. Text color `#0A1227` against `#FDFAF9` has a calculated WCAG contrast ratio of 17.91:1.
 - The preview browser reported no warning or error logs during the final desktop check.
 
-The scan area remains an empty placeholder from the Figma design. This verification covers the static page in browser viewport emulation, not a real-device test or a working QR destination.
+Android download integration:
+
+- The QR SVG is generated during the build and decodes to `https://cozie.pages.dev/download/android`.
+- Browser screenshots at 1920 x 1080 and 390 x 844 retain the existing layout. Both rendered QR codes decode successfully. The document width matches the viewport width at both sizes.
+- Unit coverage includes SVG QR decoding, release manifest validation, GET/HEAD downloads, unpublished releases, inconsistent APK metadata, and R2 bucket initialization.
+- Both GitHub Actions workflows passed actionlint.
+- APK publication belongs to `lab_mobile`. Before the first upload, the download and metadata endpoints intentionally report HTTP 503; no downloadable APK is manufactured for testing.
+
+Browser checks use viewport emulation, not physical-device scanning or APK installation.

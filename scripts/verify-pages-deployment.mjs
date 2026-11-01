@@ -21,7 +21,8 @@ async function files(directory, prefix = "") {
       : [relative];
   }))).flat();
 }
-const paths = await files(output);
+const privateFiles = new Set(["_routes.json", "_headers", "_redirects", "_worker.js"]);
+const paths = (await files(output)).filter((file) => !privateFiles.has(file));
 const digest = (bytes) => createHash("sha256").update(bytes).digest("hex");
 
 async function verify(baseUrl) {

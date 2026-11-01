@@ -29,11 +29,11 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Test deployment setup
-        run: node --test scripts/ensure-pages-project.test.mjs
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Build static site
-        run: npm run build
+      - name: Test deployment setup
+        run: npm test
 
       - name: Ensure Pages project exists
         id: project
@@ -41,6 +41,17 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: node scripts/ensure-pages-project.mjs
+
+      - name: Ensure private APK bucket exists
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node scripts/ensure-download-bucket.mjs
+
+      - name: Build static site and Android QR code
+        env:
+          SITE_URL: ${{ steps.project.outputs.production-url }}
+        run: npm run build
 
       - name: Deploy to Cloudflare Pages
         id: deploy
@@ -56,3 +67,8 @@ jobs:
           PRODUCTION_URL: ${{ steps.project.outputs.production-url }}
           DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
         run: node scripts/verify-pages-deployment.mjs
+
+      - name: Check latest Android download
+        env:
+          SITE_URL: ${{ steps.project.outputs.production-url }}
+        run: node scripts/check-android-release.mjs

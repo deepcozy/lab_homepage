@@ -1,0 +1,7 @@
+name = "cozie"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-11-01"
+
+[[r2_buckets]]
+binding = "ANDROID_RELEASES"
+bucket_name = "cozie-downloads"

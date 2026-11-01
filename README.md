@@ -4,7 +4,7 @@ Static, responsive implementation of the [1920 × 1080 Figma homepage](https://w
 
 ## Preview
 
-Requires Node.js 20 or later. There are no packages to install.
+Requires Node.js 20 or later. Install build and test dependencies with `npm ci`.
 
 ```sh
 node scripts/serve.mjs
@@ -15,6 +15,7 @@ Open the printed local URL, normally `http://127.0.0.1:4173`.
 ## Build
 
 ```sh
+npm ci
 node scripts/build.mjs
 ```
 
@@ -24,7 +25,7 @@ Upload the contents of `dist/` to any static host. All image, SVG and font files
 
 - Desktop reference size: **1920 × 1080**.
 - Mobile layouts stack the copy, scan area and cloud.
-- The QR area is intentionally empty, matching the design. Supply a destination URL and replace this placeholder with a real code before using the scan flow.
+- The QR code links to `/download/android` on the production site. It is also a clickable, keyboard-accessible download link. The APK is streamed from private R2; see [ANDROID_RELEASES.md](./ANDROID_RELEASES.md) for the mobile upload contract.
 - Outfit is licensed under the SIL Open Font License in `assets/fonts/OFL.txt`.
 - Detailed design source and layout decisions: [DESIGN.md](./DESIGN.md).
 
@@ -37,3 +38,7 @@ Pages project if needed and verifies the published files after deployment.
 The default project name is `cozie`; the actual production URL appears in the
 Actions job summary. See [DEPLOY.md](./DEPLOY.md) for the required GitHub secrets,
 project configuration, custom domains, and rollback instructions.
+
+The local preview server serves static files only. Test R2 downloads through
+the deployed Pages Functions; it does not expose the local filesystem as a
+download source.
