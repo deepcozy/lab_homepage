@@ -28,4 +28,12 @@ Upload the contents of `dist/` to any static host. All image, SVG and font files
 - Outfit is licensed under the SIL Open Font License in `assets/fonts/OFL.txt`.
 - Detailed design source and layout decisions: [DESIGN.md](./DESIGN.md).
 
-This repository contains the homepage source. Pushing it does not itself enable GitHub Pages or configure a domain.
+## Deploy
+
+Pushes to `main` deploy the build to Cloudflare Pages through GitHub Actions.
+Cloudflare CLI tools run only on the GitHub runner. The workflow creates the
+Pages project if needed and verifies the published files after deployment.
+
+The default project name is `cozie`; the actual production URL appears in the
+Actions job summary. See [DEPLOY.md](./DEPLOY.md) for the required GitHub secrets,
+project configuration, custom domains, and rollback instructions.
