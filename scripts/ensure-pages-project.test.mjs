@@ -7,6 +7,7 @@ const env = {
   CLOUDFLARE_API_TOKEN: "fixture",
 };
 const project = { production_branch: "main", subdomain: "cozie.pages.dev" };
+const accountToken = ["cfat", "fixture"].join("_");
 const reply = (status, body) => new Response(JSON.stringify(body), { status });
 
 test("reuse an existing project without modifying it", async () => {
@@ -93,4 +94,32 @@ test("reject invalid subdomains from the API", async () => {
       result: { ...project, subdomain: "example.com\ninjected=value" },
     }),
   }), /valid Pages project subdomain/);
+});
+
+test("verify an account token before checking Pages permissions", async () => {
+  const calls = [];
+  await ensurePagesProject({
+    env: { ...env, CLOUDFLARE_API_TOKEN: accountToken },
+    fetchImpl: async (url) => {
+      calls.push(url);
+      return url.endsWith("/tokens/verify")
+        ? reply(200, { success: true, result: { status: "active" } })
+        : reply(200, { success: true, result: project });
+    },
+  });
+  assert.equal(calls.length, 2);
+  assert.ok(calls[0].endsWith("/tokens/verify"));
+  assert.ok(calls[1].endsWith("/pages/projects/cozie"));
+});
+
+test("an invalid account token never sends a Pages request", async () => {
+  let calls = 0;
+  await assert.rejects(ensurePagesProject({
+    env: { ...env, CLOUDFLARE_API_TOKEN: accountToken },
+    fetchImpl: async () => {
+      calls++;
+      return reply(401, { success: false, errors: [{ code: 1000 }] });
+    },
+  }), /exact active token/);
+  assert.equal(calls, 1);
 });

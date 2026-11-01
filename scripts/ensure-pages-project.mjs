@@ -49,6 +49,20 @@ export async function ensurePagesProject({
     );
   }
 
+  if (token.startsWith("cfat_")) {
+    const verification = await request(
+      `https://api.cloudflare.com/client/v4/accounts/${accountId}/tokens/verify`,
+    );
+    if (!verification.response.ok || !verification.data?.success ||
+        verification.data.result?.status !== "active") {
+      throw new Error(
+        "Cloudflare could not verify the account API token. " +
+        "Check that CLOUDFLARE_API_TOKEN contains the exact active token for this account.",
+      );
+    }
+    console.log("Cloudflare account API token is active.");
+  }
+
   let result = await request(`${base}/${encodeURIComponent(name)}`);
   if (!result.response.ok || !result.data?.success) {
     // Wrangler uses error 8000007 to identify a missing Pages project.

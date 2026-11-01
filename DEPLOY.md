@@ -61,7 +61,9 @@ npm run build
 
 For deployment failures, inspect the failing step in GitHub Actions. Permission
 errors during project initialization require correcting the API token secret,
-then rerunning the workflow.
+then rerunning the workflow. Account tokens are checked against Cloudflare's
+token verification endpoint before any Pages request, so invalid credentials
+and missing Pages permissions produce separate errors.
 
 To redeploy the current source, manually run the workflow on `main`. To roll
 back, revert the relevant source commit and push to `main`; the workflow
