@@ -1,96 +1,59 @@
-# Mobile APK upload contract
+# Public Android release contract
 
-The mobile repository stays private. Its own GitHub Actions workflow selects a
-published release, retrieves the signed APK, and uploads it to private R2.
-The homepage's Pages Function makes only the selected APK publicly downloadable.
+The mobile repository stays private. Its publisher uploads only the signed APK
+to GitHub Releases in the public `deepcozy/lab_homepage` repository. No R2 or
+Cloudflare credentials are needed by the mobile publisher.
 
-## Account prerequisite
+## Publication
 
-The Cloudflare account owner must first activate R2 in the Cloudflare dashboard,
-including any subscription or billing setup requested there. API tokens can be
-created before activation, so possessing an R2 token does not establish that R2
-is enabled. Error `10042 / NotEntitled` means R2 activation is still required.
-After activation, rerun the homepage deployment workflow to create the bucket
-and publish its Pages binding before configuring the mobile uploader.
+1. Build and verify the signed APK in `lab_mobile` Actions.
+2. Create a draft release in `deepcozy/lab_homepage`, tagged
+   `android-v<version>` (for example `android-v0.0.3`).
+3. Upload the complete signed file as `cozie.apk` and verify the uploaded asset.
+4. Publish the draft only after the asset upload succeeds. Prereleases are
+   supported and are included in homepage selection.
 
-## Destination
+Use immutable versioned releases. Do not commit APK binaries or private mobile
+source to the homepage repository. If several architecture APKs are published,
+`cozie.apk` must be the intended universal APK. Without that name, the homepage
+requires exactly one uploaded `.apk` asset; ambiguous selections fail.
 
-| Setting | Value |
-| --- | --- |
-| R2 bucket | `cozie-downloads` |
-| S3 endpoint | `https://<CLOUDFLARE_ACCOUNT_ID>.r2.cloudflarestorage.com` |
-| Region | `auto` |
-| APK key | `android/releases/<version>/cozie-<version>.apk` |
-| Latest manifest key | `android/latest.json` |
-| Public download | `https://cozie.pages.dev/download/android` |
-| Public metadata | `https://cozie.pages.dev/api/android-release` |
-| Pages R2 binding | `ANDROID_RELEASES` |
+## Authorization
 
-Do not enable public bucket access or use an expiring presigned URL for the QR.
-The QR encodes the fixed public download endpoint. Updating `android/latest.json`
-changes the download immediately without changing the QR or redeploying Pages.
+Use a fine-grained PAT or GitHub App installation token restricted to the
+homepage repository with Contents read/write. Store it in the mobile repository
+as `HOMEPAGE_RELEASE_TOKEN`, scoped to the publication step. Keep the normal
+mobile `GITHUB_TOKEN` for mobile repository operations. The token must not be
+committed, printed, sent to browsers, or shared with Cloudflare.
 
-## Manifest
+A release published with a PAT or GitHub App token triggers homepage Actions.
+A release created using `GITHUB_TOKEN` may not trigger another workflow. The
+homepage's scheduled reconciliation also catches missed events and assets
+uploaded after publication. If needed, the publisher can explicitly dispatch
+`deploy-pages.yml` on `main` using a separately authorized Actions-write token,
+or send the `android-release` repository dispatch with Contents-write access.
+Ordinary publication needs no additional dispatch permission.
 
-Example structure; compute the real size and SHA-256 from the signed APK:
+## Homepage behavior
 
-```json
-{
-  "version": "1.0.0",
-  "key": "android\/releases\/1.0.0\/cozie-1.0.0.apk",
-  "filename": "cozie-1.0.0.apk",
-  "size": 123456789,
-  "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-  "publishedAt": "2026-11-01T12:00:00Z"
-}
-```
+The QR always points to `https://cozie.pages.dev/download/android`. A deployment
+lists all release pages, includes published prereleases, excludes drafts and
+non-`android-*` releases, then selects the newest complete APK by `published_at`.
+The GitHub REST `/releases/latest` endpoint is not used.
 
-The version must be semantic (an optional `v` prefix and prerelease/build suffix
-are accepted). The filename must match the APK key's last component. The size
-must be the exact byte count; SHA-256 must be 64 lowercase hexadecimal digits.
-Use the GitHub release's publication timestamp for `publishedAt`.
+Actions generates a static HTTP 302 redirect to the selected asset's exact
+`browser_download_url`, and `/api/android-release.json` with its release/asset
+IDs, filename, size, timestamp and GitHub SHA-256 digest when available. The old
+`/api/android-release` entry redirects to the JSON endpoint.
 
-## Changes for lab_mobile
+New releases, release edits/deletions, main pushes and manual dispatch deploy
+the current main branch. The Sync Android release workflow also runs at minutes
+17 and 47 each hour. It compares deployed metadata with the newest complete
+release, verifies the fixed entry and anonymous APK HEAD response, and dispatches
+main deployment when an update or repair is needed.
 
-Add the R2 upload steps to the existing `mobile-build.yml` release job, after
-`python3 tool/ci/release.py publish` succeeds. This is also compatible with a
-separate scheduled reconciliation job or a manually dispatched workflow.
-
-The current publisher creates staging prereleases, so include published
-prereleases when selecting the latest release; exclude drafts. Select by
-`published_at`, then use the `.apk` asset. Do not use the GitHub REST
-`releases/latest` endpoint, which excludes prereleases. Fail clearly if the APK
-selection is ambiguous.
-
-Do not rely only on a separate `release: published` workflow: releases created
-with the workflow's `GITHUB_TOKEN` do not start another ordinary event workflow.
-Putting the upload in the existing release job avoids a cross-repository token.
-
-Configure these Actions secrets in `lab_mobile`:
-
-- `CLOUDFLARE_ACCOUNT_ID`
-- `R2_ACCESS_KEY_ID`
-- `R2_SECRET_ACCESS_KEY`
-
-Map the S3 credentials to `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`, and
-set `AWS_DEFAULT_REGION=auto`. Use R2 credentials with object read/write access
-to `cozie-downloads`. S3 credentials remain exclusively in Actions.
-
-Publication order:
-
-1. Resolve the newest published release and download its signed APK.
-2. Compute the APK's SHA-256 and exact byte count.
-3. Upload the APK to its versioned key with content type
-   `application/vnd.android.package-archive`, attachment disposition, and custom
-   metadata `sha256=<computed digest>`.
-4. Check the uploaded object's size and SHA-256 metadata.
-5. Upload the manifest to `android/latest.json` with content type
-   `application/json` and cache control `no-store`.
-6. Check public metadata and HEAD the public download URL. Its content length,
-   `X-Cozie-Version`, and `X-Cozie-SHA256` must match the manifest.
-
-Never replace the latest manifest before the APK is fully uploaded. Keep
-versioned APKs immutable. For rollback, restore a known-good manifest.
-
-Before the first APK is uploaded, the public endpoints return HTTP 503 and the
-homepage Actions summary says that the first release is pending.
+A new release becomes downloadable after deployment finishes, usually within a
+few minutes. Scheduled runs can be delayed by GitHub; this is eventual
+synchronization, not a per-scan API lookup. Actions must remain enabled, and
+inactive public repositories may need their scheduled workflows re-enabled.
+If there is no complete APK, selection fails without replacing the live site.

@@ -25,7 +25,7 @@ Upload the contents of `dist/` to any static host. All image, SVG and font files
 
 - Desktop reference size: **1920 × 1080**.
 - Mobile layouts stack the copy, scan area and cloud.
-- The QR code links to `/download/android` on the production site. It is also a clickable, keyboard-accessible download link. The APK is streamed from private R2; see [ANDROID_RELEASES.md](./ANDROID_RELEASES.md) for the mobile upload contract.
+- The QR code links to `/download/android` on the production site. It is also a clickable, keyboard-accessible download link. Actions resolves the newest complete public GitHub release APK and generates a 302 redirect; see [ANDROID_RELEASES.md](./ANDROID_RELEASES.md) for the mobile upload contract.
 - Outfit is licensed under the SIL Open Font License in `assets/fonts/OFL.txt`.
 - Detailed design source and layout decisions: [DESIGN.md](./DESIGN.md).
 
@@ -39,6 +39,7 @@ The default project name is `cozie`; the actual production URL appears in the
 Actions job summary. See [DEPLOY.md](./DEPLOY.md) for the required GitHub secrets,
 project configuration, custom domains, and rollback instructions.
 
-The local preview server serves static files only. Test R2 downloads through
-the deployed Pages Functions; it does not expose the local filesystem as a
-download source.
+The build reads public GitHub release metadata and checks the APK download.
+The local preview server serves static files only; test the generated Pages
+redirect on the deployed site. New releases trigger deployment, with scheduled
+reconciliation twice hourly. The QR remains unchanged across APK versions.

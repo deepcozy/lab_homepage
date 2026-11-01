@@ -1,37 +1,20 @@
-import { appendFile } from "node:fs/promises";
+import { appendFile, readFile } from "node:fs/promises";
+import {
+  findAndroidRelease, reconcileAndroidRelease, siteOrigin,
+} from "../lib/android-release.mjs";
 
-const site = new URL(process.env.SITE_URL || "https://cozie.pages.dev");
-if (site.protocol !== "https:" || site.href !== `${site.origin}/`) {
-  throw new Error("SITE_URL must be an HTTPS origin.");
-}
-const response = await fetch(new URL("/api/android-release", site), {
-  cache: "no-store",
-  signal: AbortSignal.timeout(30_000),
-});
-const release = await response.json();
-let summary;
-if (response.status === 503 && release.available === false) {
-  summary = "Android download is awaiting the first published APK in R2.";
+const site = siteOrigin(process.env.SITE_URL);
+const sync = process.env.SYNC_ANDROID_RELEASE === "true";
+const expected = sync
+  ? await findAndroidRelease()
+  : JSON.parse(await readFile(new URL("../dist/api/android-release.json", import.meta.url), "utf8"));
+const problem = await reconcileAndroidRelease(site, expected, { sync });
+
+let summary = `Android ${expected.version}: ${expected.assetUrl} (${expected.size} bytes).`;
+if (problem) {
+  summary += `\n\nDeployment requested on main: ${problem}`;
 } else {
-  if (!response.ok || release.available !== true ||
-      release.url !== new URL("/download/android", site).href ||
-      !/^[a-f0-9]{64}$/.test(release.sha256 || "") ||
-      !Number.isSafeInteger(release.size) || release.size <= 0) {
-    throw new Error(`Invalid public Android release metadata (HTTP ${response.status}).`);
-  }
-  const download = await fetch(release.url, {
-    method: "HEAD",
-    cache: "no-store",
-    signal: AbortSignal.timeout(30_000),
-  });
-  if (!download.ok ||
-      download.headers.get("content-type") !== "application/vnd.android.package-archive" ||
-      Number(download.headers.get("content-length")) !== release.size ||
-      download.headers.get("x-cozie-sha256") !== release.sha256 ||
-      download.headers.get("x-cozie-version") !== release.version) {
-    throw new Error(`Android download does not match the release metadata (HTTP ${download.status}).`);
-  }
-  summary = `Android ${release.version}: ${release.url} (${release.size} bytes; SHA-256 ${release.sha256})`;
+  summary += "\n\nVerified release metadata, the fixed QR entry and anonymous APK download.";
 }
 console.log(summary);
 if (process.env.GITHUB_STEP_SUMMARY) {

@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  release:
+    types: [published, edited, deleted]
+  repository_dispatch:
+    types: [android-release]
 
 permissions:
   contents: read
@@ -14,7 +18,6 @@ concurrency:
 
 jobs:
   deploy:
-    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -23,6 +26,8 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: main
 
       - name: Set up Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
@@ -42,15 +47,10 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: node scripts/ensure-pages-project.mjs
 
-      - name: Ensure private APK bucket exists
-        env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: node scripts/ensure-download-bucket.mjs
-
-      - name: Build static site and Android QR code
+      - name: Resolve latest public APK and build download redirect
         env:
           SITE_URL: ${{ steps.project.outputs.production-url }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: npm run build
 
       - name: Deploy to Cloudflare Pages

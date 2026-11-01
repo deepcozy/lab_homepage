@@ -1,5 +1,9 @@
 # Android release downloads
 
+Status: superseded by [spec 0003](./0003-public-release-downloads.md).
+R2 was rejected because account activation requires billing setup.
+The following is the historical design and is no longer deployed.
+
 ## Objective
 
 Replace the homepage scan placeholder with a working QR code for the newest
