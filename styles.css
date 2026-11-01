@@ -1,0 +1,227 @@
+@font-face {
+  font-family: "Outfit";
+  src: url("./assets/fonts/Outfit-Variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+  --color-page: #fdfaf9;
+  --color-ink: #0a1227;
+  --font-family: "Outfit", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-width: 280px;
+  background: var(--color-page);
+}
+
+body {
+  color: var(--color-ink);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  min-height: 540px;
+  overflow: hidden;
+  background: var(--color-page);
+}
+
+.brand {
+  position: absolute;
+  z-index: 1;
+  top: 5.4435185185%;
+  left: 5.1598958333%;
+  font-size: clamp(28px, 2.7217708333vw, 70px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.020833em;
+}
+
+.intro {
+  position: absolute;
+  z-index: 1;
+  top: 26.9157407407%;
+  left: 5.5567708333%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(7px, 0.5103125vw, 14px);
+}
+
+.intro h1,
+.intro p,
+.scan p {
+  margin: 0;
+}
+
+.intro h1 {
+  font-size: clamp(56px, 6.5776041667vw, 168px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.005968em;
+  white-space: nowrap;
+}
+
+.intro p {
+  font-size: clamp(20px, 2.0413541667vw, 52px);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.000694em;
+  white-space: nowrap;
+}
+
+.scan {
+  position: absolute;
+  z-index: 1;
+  top: 54.637037037%;
+  left: 5.8973958333%;
+  display: flex;
+  align-items: center;
+  gap: clamp(24px, 2.268125vw, 58px);
+}
+
+.scan__slot {
+  flex: none;
+  width: 187.258px;
+  height: 185.081px;
+}
+
+.scan__code {
+  width: 187.258px;
+  height: 185.081px;
+  background: #fff;
+  transform-origin: top left;
+}
+
+.scan__code img {
+  display: block;
+  max-width: none;
+}
+
+.scan p {
+  font-size: clamp(20px, 1.5877083333vw, 40px);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.003969em;
+  white-space: nowrap;
+}
+
+.hero__art {
+  position: absolute;
+  z-index: 0;
+  right: 0;
+  bottom: 0;
+  display: block;
+  width: 53.3854166667%;
+  height: auto;
+  aspect-ratio: 1025 / 852;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (max-width: 1200px) {
+  .scan__slot {
+    width: 149.8064px;
+    height: 148.0648px;
+  }
+
+  .scan__code {
+    transform: scale(0.8);
+  }
+}
+
+@media (max-width: 700px), (max-width: 1100px) and (max-aspect-ratio: 1/1) {
+  .hero {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100svh;
+    height: auto;
+  }
+
+  .brand {
+    position: relative;
+    top: auto;
+    left: auto;
+    align-self: flex-start;
+    margin: 24px 28px 0;
+    font-size: 32px;
+  }
+
+  .intro {
+    position: relative;
+    top: auto;
+    left: auto;
+    gap: 12px;
+    margin: 44px 28px 0;
+  }
+
+  .intro h1 {
+    font-size: clamp(36px, 11.25vw, 72px);
+    white-space: normal;
+  }
+
+  .intro p {
+    max-width: 29ch;
+    font-size: clamp(18px, 5.13vw, 24px);
+    line-height: 1.45;
+    white-space: normal;
+  }
+
+  .scan {
+    position: relative;
+    top: auto;
+    left: auto;
+    gap: 24px;
+    margin: 28px 28px 24px;
+  }
+
+  .scan__slot {
+    width: 127.33544px;
+    height: 125.85508px;
+  }
+
+  .scan__code {
+    transform: scale(0.68);
+  }
+
+  .scan p {
+    font-size: clamp(16px, 4.6154vw, 22px);
+    white-space: normal;
+  }
+
+  .hero__art {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    align-self: flex-end;
+    width: 115%;
+    height: auto;
+    aspect-ratio: auto;
+    margin-top: auto;
+    margin-right: -5%;
+    object-fit: contain;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

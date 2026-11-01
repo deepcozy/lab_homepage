@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#fdfaf9" />
+    <meta name="description" content="Meet Cozie. A little company for your parenting days." />
+    <title>Cozie — A little company for your parenting days</title>
+    <link rel="preload" href="./assets/fonts/Outfit-Variable.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="hero" aria-labelledby="hero-title">
+      <header class="brand" aria-label="Cozie">cozie</header>
+
+      <section class="intro">
+        <h1 id="hero-title">Hi, I’m Cozie.</h1>
+        <p>A little company for your parenting days.</p>
+      </section>
+
+      <div class="scan" role="group" aria-label="Meet Cozie">
+        <div class="scan__slot" role="img" aria-label="QR code placeholder">
+          <div class="scan__code" aria-hidden="true">
+            <img src="./assets/qr-corners.svg" alt="" width="187.258" height="185.081" />
+          </div>
+        </div>
+        <p>Scan to meet Cozie.</p>
+      </div>
+
+      <img
+        class="hero__art"
+        src="./assets/cozie-cloud.png"
+        width="1376"
+        height="1143"
+        alt="Cozie, a fluffy pink cloud companion with bright blue eyes."
+        fetchpriority="high"
+        decoding="async"
+      />
+    </main>
+  </body>
+</html>

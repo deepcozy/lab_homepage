@@ -1,0 +1,15 @@
+{
+  "name": "cozie-home-page",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cozie official homepage, implemented from the 1920×1080 Figma design.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "preview": "node scripts/serve.mjs",
+    "build": "node scripts/build.mjs"
+  }
+}
