@@ -4,6 +4,15 @@ The mobile repository stays private. Its own GitHub Actions workflow selects a
 published release, retrieves the signed APK, and uploads it to private R2.
 The homepage's Pages Function makes only the selected APK publicly downloadable.
 
+## Account prerequisite
+
+The Cloudflare account owner must first activate R2 in the Cloudflare dashboard,
+including any subscription or billing setup requested there. API tokens can be
+created before activation, so possessing an R2 token does not establish that R2
+is enabled. Error `10042 / NotEntitled` means R2 activation is still required.
+After activation, rerun the homepage deployment workflow to create the bucket
+and publish its Pages binding before configuring the mobile uploader.
+
 ## Destination
 
 | Setting | Value |

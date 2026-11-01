@@ -169,3 +169,17 @@ test("R2 permission errors never trigger bucket creation", async () => {
   }), /R2 Storage Edit/);
   assert.equal(calls, 1);
 });
+
+test("an inactive R2 subscription reports the required account activation", async () => {
+  let calls = 0;
+  await assert.rejects(ensureDownloadBucket({
+    env: cloudflareEnv,
+    fetchImpl: async () => {
+      calls++;
+      return new Response(JSON.stringify({
+        success: false, errors: [{ code: 10042 }],
+      }), { status: 403 });
+    },
+  }), /R2 is not enabled.*10042/);
+  assert.equal(calls, 1);
+});

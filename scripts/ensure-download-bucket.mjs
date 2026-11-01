@@ -23,6 +23,13 @@ export async function ensureDownloadBucket({ env = process.env, fetchImpl = fetc
   }
   if (!result.response.ok || !result.data?.success) {
     const codes = (result.data?.errors || []).map((error) => error.code).join(", ");
+    if ((result.data?.errors || []).some((error) => error.code === 10042)) {
+      throw new Error(
+        "R2 is not enabled for this Cloudflare account (HTTP 403; code 10042 / NotEntitled). " +
+        "Complete R2 activation in the Cloudflare dashboard, then rerun this workflow. " +
+        "Account subscription activation must be completed by the account owner.",
+      );
+    }
     throw new Error(
       `Cannot initialize the private R2 download bucket (HTTP ${result.response.status}; codes: ${codes}). ` +
       "The Cloudflare token requires Workers R2 Storage Edit access.",

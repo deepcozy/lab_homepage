@@ -19,6 +19,11 @@ No Cloudflare CLI or Wrangler dependency is installed on the developer machine.
 `_routes.json` limits Functions execution to the two Android endpoints; all
 other public files are served statically.
 
+R2 must first be activated by the account owner in the Cloudflare dashboard.
+If bucket initialization fails with `10042 / NotEntitled`, complete that
+account setup and rerun the workflow. The workflow does not enroll the account
+in a subscription or accept billing terms.
+
 ## GitHub configuration
 
 Repository Actions secrets:
