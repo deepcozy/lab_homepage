@@ -10,7 +10,7 @@ are serialized, and each resolves the newest APK after acquiring its slot.
 
 The runner uses Node.js 24, runs `npm ci` and `npm test`, and ensures the Pages
 project exists. The build queries public homepage releases, checks anonymous
-APK accessibility and size, generates the QR code and static download redirect,
+APK accessibility and size, generates both platform QR codes and the static Android download redirect,
 and uploads `dist/` using the official Cloudflare Wrangler action. R2 and Pages
 Functions are not used. No Cloudflare CLI is installed on the developer machine.
 
@@ -82,6 +82,12 @@ npm run build
 The build requires access to the public GitHub releases API and APK HEAD URL.
 Local preview serves static files; Pages `_redirects` rules are verified on the
 deployed site, not emulated by the local preview server.
+
+`download-platform.js` selects the platform before page rendering. The build
+copies that script and generates Android and iOS SVG QR assets. The iOS QR and
+button use `https://testflight.apple.com/join/51gqyeCn`; the test suite checks
+their consistency. Device selection runs in the browser without API requests
+and does not require changes to Actions secrets or Cloudflare configuration.
 
 For failures, inspect the failing Actions step. Fix token permissions if needed
 and rerun on main. Cloudflare account tokens are verified before Pages API calls.

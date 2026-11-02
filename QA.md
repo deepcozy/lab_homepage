@@ -18,3 +18,12 @@ Android download integration (updated 2026-11-02):
 - The real public `android-v0.0.3/cozie.apk` asset is selected by the build; its anonymous HEAD response reports 67165920 bytes. APK publication belongs to `lab_mobile`; no artificial release is used for testing.
 
 Browser checks use viewport emulation, not physical-device scanning or APK installation.
+
+Platform downloads (2026-11-02):
+
+- All 32 Node tests pass, including Android/iOS/desktop detection, client hints, iPadOS desktop mode, touch laptops, unknown devices, independent iOS QR decoding and invitation link consistency.
+- Chrome checks at 1920 x 1080 and 1366 x 768 show two labeled QR codes. A 390 x 844 desktop window retains both choices.
+- Android at 390 x 844, 320 x 568 and 844 x 390 shows only Android. iPhone at 390 x 844 and iPadOS desktop mode at 820 x 1180 show only iOS.
+- Mobile buttons span the download area beneath the QR and platform description. The touch targets are at least 52px high and keyboard focus is visible.
+- Every visible QR decodes correctly from the actual browser screenshot. All eight layouts have no horizontal overflow.
+- The build includes `download-platform.js` and both generated QR SVGs; the existing Android release selection and static redirect remain in place.
