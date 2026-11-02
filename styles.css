@@ -157,10 +157,9 @@ body {
 
 [data-download-platform="android"] .download-card,
 [data-download-platform="ios"] .download-card {
-  display: grid;
-  grid-template-columns: var(--qr-size) minmax(0, 1fr);
-  align-items: center;
-  gap: 18px 20px;
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
   width: 100%;
 }
 
@@ -177,16 +176,17 @@ body {
 [data-download-platform="android"] .download-card__details,
 [data-download-platform="ios"] .download-card__details {
   align-items: flex-start;
+  min-width: 0;
+  gap: 10px;
   margin-top: 0;
 }
 
 [data-download-platform="android"] .download-card__button,
 [data-download-platform="ios"] .download-card__button {
   display: inline-flex;
-  grid-column: 1 / -1;
-  width: 100%;
-  min-height: 52px;
-  font-size: 16px;
+  min-height: 42px;
+  padding: 8px 14px;
+  font-size: 14px;
 }
 
 [data-download-platform="android"] .download-card__mobile-label,
@@ -194,7 +194,7 @@ body {
   display: block;
   margin-bottom: 4px;
   color: #5b6070;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .scan__slot {

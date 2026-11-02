@@ -34,9 +34,11 @@ links against it in the build's test suite so its QR and button cannot diverge.
 
 Preserve the page's Outfit typography, colors, cloud illustration, scan corners
 and responsive structure. Desktop scan cards sit side by side with explicit
-platform labels. On detected mobile devices, place the QR and platform
-description in the first row and a full-width download button underneath.
-The button has a large touch target and visible keyboard focus.
+platform labels. On detected mobile devices, place the QR on the left and a
+compact description/button stack on the right, separated by 24px. Align the
+bottom of the button with the bottom of the QR frame. Place the Get Cozie
+description above the button. The button is at least 42px high and has visible
+keyboard focus.
 
 ## Verification and delivery
 

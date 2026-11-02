@@ -26,7 +26,7 @@ Upload the contents of `dist/` to any static host. All image, SVG and font files
 - Desktop reference size: **1920 × 1080**.
 - Mobile layouts stack the copy, scan area and cloud.
 - Desktop shows labeled Android and iOS QR codes. Android links to `/download/android`; iOS links to the Cozie TestFlight invitation. Both QR codes are clickable and keyboard accessible.
-- Android and iOS devices see only their platform's QR, with a full-width installation button underneath. Detection includes iPadOS desktop mode and does not depend on window width. Without JavaScript or on unknown devices, both QR links remain available.
+- Android and iOS devices see only their platform's QR. A compact installation button sits to its right, aligned to the QR's bottom edge, with the platform description above it. Detection includes iPadOS desktop mode and does not depend on window width. Without JavaScript or on unknown devices, both QR links remain available.
 - Actions resolves the newest complete public GitHub release APK and generates the Android download redirect; see [ANDROID_RELEASES.md](./ANDROID_RELEASES.md) for the mobile upload contract.
 - Outfit is licensed under the SIL Open Font License in `assets/fonts/OFL.txt`.
 - Detailed design source and layout decisions: [DESIGN.md](./DESIGN.md).

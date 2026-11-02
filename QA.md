@@ -23,7 +23,7 @@ Platform downloads (2026-11-02):
 
 - All 32 Node tests pass, including Android/iOS/desktop detection, client hints, iPadOS desktop mode, touch laptops, unknown devices, independent iOS QR decoding and invitation link consistency.
 - Chrome checks at 1920 x 1080 and 1366 x 768 show two labeled QR codes. A 390 x 844 desktop window retains both choices.
-- Android at 390 x 844, 320 x 568 and 844 x 390 shows only Android. iPhone at 390 x 844 and iPadOS desktop mode at 820 x 1180 show only iOS.
-- Mobile buttons span the download area beneath the QR and platform description. The touch targets are at least 52px high and keyboard focus is visible.
-- Every visible QR decodes correctly from the actual browser screenshot. All eight layouts have no horizontal overflow.
+- Android at 390 x 844, 320 x 568 and 844 x 390 shows only Android. iPhone at 390 x 844 and 320 x 568, and iPadOS desktop mode at 820 x 1180 show only iOS.
+- Mobile buttons sit 24px to the right of the QR, aligned with its bottom edge, with the platform description above. The buttons are at least 42px high and keyboard focus is visible.
+- Every visible QR decodes correctly from the actual browser screenshot. All nine layouts have no horizontal overflow. Browser measurements confirm mobile buttons align with the QR frame's bottom edge and remain inside the screen.
 - The build includes `download-platform.js` and both generated QR SVGs; the existing Android release selection and static redirect remain in place.
